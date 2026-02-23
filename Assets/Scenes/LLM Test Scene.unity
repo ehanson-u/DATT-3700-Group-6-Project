@@ -548,16 +548,16 @@ MonoBehaviour:
   _parallelPrompts: -1
   _contextSize: 8192
   _batchSize: 512
-  _model: gemma-3-1b-it-Q4_K_M.gguf
+  _model: gemma-2-9b-it-Q4_K_M.gguf
   _flashAttention: 0
   _reasoning: 0
   _lora: 
   _loraWeights: 
   dontDestroyOnLoad: 1
   _embeddingsOnly: 0
-  _embeddingLength: 1152
+  _embeddingLength: 3584
   minContextLength: 0
-  maxContextLength: 32768
+  maxContextLength: 8192
 --- !u!4 &246711804
 Transform:
   m_ObjectHideFlags: 0
