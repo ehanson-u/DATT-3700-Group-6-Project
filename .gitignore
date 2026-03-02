@@ -101,3 +101,6 @@ InitTestScene*.unity*
 # Streaming Assets for Llama
 /[Aa]ssets/[Ss]treaming/[Ll]lama[Ll]ib*
 /Assets/StreamingAssets/LlamaLib-v2.0.2
+/Assets/MediaPipeUnity
+/Assets/StreamingAssets
+/Packages/com.github.homuler.mediapipe
