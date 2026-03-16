@@ -14,7 +14,7 @@ public class MicrophoneSelector : MonoBehaviour
         string[] devices = Microphone.devices;
         
         if (devices == null || devices.Length == 0)
-            return new List<string> { "No Microphones Found" };
+            return new List<string> {};
         
         return devices.ToList();
     }

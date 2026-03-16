@@ -6,11 +6,11 @@ using NaughtyAttributes;
 public class MicrophoneListener : MonoBehaviour
 {
     [Header("Settings")]
-    [SerializeField] private bool playMicAudio;
     [SerializeField] [Range(0f, 4f)] private float sensitivity = 1f;
-
-    [Header("Live Monitor")]
-    [ProgressBar("Volume", 1.0f)]
+    
+    [Header("Debug")]
+    [SerializeField] private bool playMicAudio;
+    [ProgressBar("Volume Monitor", 1.0f)]
     [SerializeField] private float currentLoudness;
     
     // Required component references
@@ -18,7 +18,7 @@ public class MicrophoneListener : MonoBehaviour
     private AudioSource _audioSource;
     
     private AudioClip _micClip;
-    private string _device;
+    private string _selectedMicrophone;
 
     void Start()
     {
@@ -32,32 +32,41 @@ public class MicrophoneListener : MonoBehaviour
         StartMic();
     }
 
-    void Update()
-    {
-        currentLoudness = Mathf.Clamp01(GetLoudness() * sensitivity);
-        
-        if (playMicAudio && _audioSource.isPlaying)
-            _audioSource.volume = sensitivity / 10f;
-    }
-
     void StartMic()
     {
-        _device = _micSelector.selectedMicrophone;
-        if (string.IsNullOrEmpty(_device) || _device == "No Microphones Found") return;
+        _selectedMicrophone = _micSelector.selectedMicrophone;
+        if (string.IsNullOrEmpty(_selectedMicrophone)) return;
 
         // Continuously record 1 second microphone audio clips
-        _micClip = Microphone.Start(_device, true, 1, 44100/2);
+        _micClip = Microphone.Start(_selectedMicrophone, true, 1, 44100/2);
 
         _audioSource.clip = _micClip;
         
-        if (playMicAudio) StartCoroutine(WaitAndPlay());
+        StartCoroutine(WaitAndPlay());
     }
 
     System.Collections.IEnumerator WaitAndPlay()
     {
-        while (Microphone.GetPosition(_device) <= 0)
+        while (Microphone.GetPosition(_selectedMicrophone) <= 0)
             yield return null; 
         _audioSource.Play();
+    }
+    
+    void Update()
+    {
+        currentLoudness = Mathf.Clamp01(GetLoudness() * sensitivity);
+        _audioSource.volume = (playMicAudio ? 1 : 0);
+    }
+    
+    void OnAudioFilterRead(float[] data, int channels)
+    {
+        for (int i = 0; i < data.Length; i++)
+        {
+            data[i] *= sensitivity;
+        
+            if (data[i] > 1f) data[i] = 1f;
+            if (data[i] < -1f) data[i] = -1f;
+        }
     }
 
     public float GetLoudness()
@@ -66,7 +75,7 @@ public class MicrophoneListener : MonoBehaviour
 
         int sampleWindow = 128;
         float[] waveData = new float[sampleWindow];
-        int micPosition = Microphone.GetPosition(_device);
+        int micPosition = Microphone.GetPosition(_selectedMicrophone);
 
         if (micPosition < sampleWindow) return 0f;
 

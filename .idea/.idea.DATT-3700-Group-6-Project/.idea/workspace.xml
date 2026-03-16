@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="f6698c14-580f-4365-aef1-14cfc989a65e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.DATT-3700-Group-6-Project/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.DATT-3700-Group-6-Project/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Audio/MicrophoneListener.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Audio/MicrophoneListener.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Audio/MicrophoneSelector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Audio/MicrophoneSelector.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +83,7 @@
       <updated>1773533813036</updated>
       <workItem from="1773533814063" duration="3124000" />
       <workItem from="1773564781969" duration="2570000" />
-      <workItem from="1773610627287" duration="4369000" />
+      <workItem from="1773610627287" duration="6568000" />
     </task>
     <servers />
   </component>
@@ -97,6 +97,17 @@
     <option name="unityProjectFolder" value="true" />
   </component>
   <component name="UnityUnitTestConfiguration" currentTestLauncher="Both" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>
