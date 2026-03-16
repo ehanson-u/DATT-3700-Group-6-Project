@@ -2,7 +2,7 @@ using UnityEngine;
 using TMPro;
 using LLMUnity;
 
-public class ChatInputTest : MonoBehaviour
+public class DetectiveCharacter : MonoBehaviour
 {
     [Header("LLM Components")]
     public LLMAgent agent;
@@ -10,6 +10,11 @@ public class ChatInputTest : MonoBehaviour
     [Header("UI Elements")]
     public TMP_InputField inputField;
     public TextMeshProUGUI outputField;
+
+    private string _currentEmotion;
+    private float _emotionCertainty;
+
+    private string[] _visibleObjects;
 
     void Start()
     {
@@ -27,6 +32,17 @@ public class ChatInputTest : MonoBehaviour
 
         inputField.text = "";
         inputField.ActivateInputField();
+    }
+
+    public void UpdateEmotion(string emotion, float certainty)
+    {
+        _currentEmotion = emotion;
+        _emotionCertainty = certainty;
+    }
+
+    public void UpdateObjectsInView(string[] objects)
+    {
+        _visibleObjects = objects;
     }
 
     void HandleReply(string reply)
