@@ -2,64 +2,78 @@ using UnityEngine;
 using NaughtyAttributes;
 
 [RequireComponent(typeof(MicrophoneSelector))]
-[RequireComponent(typeof(AudioSource))]
 public class MicrophoneListener : MonoBehaviour
 {
-    [Header("Settings")]
+    [Header("Microphone Settings")]
     [SerializeField] [Range(0f, 4f)] private float sensitivity = 1f;
+    [SerializeField] private int sampleRate = 44100;
     
     [Header("Debug")]
     [SerializeField] private bool playMicAudio;
     [ProgressBar("Volume Monitor", 1.0f)]
     [SerializeField] private float currentLoudness;
     
-    // Required component references
+    // Microphone settings
     private MicrophoneSelector _micSelector;
-    private AudioSource _audioSource;
-    
-    private AudioClip _micClip;
     private string _selectedMicrophone;
+
+    // Clip recording variables
+    private AudioClip _audioRecording;
+    private float _recordingTime;
+
+    private int _activeRecordings = 0;
 
     void Start()
     {
         _micSelector = GetComponent<MicrophoneSelector>();
-        _audioSource = GetComponent<AudioSource>();
         
-        // Settings for live mic playback
-        _audioSource.playOnAwake = false;
-        _audioSource.loop = true;
-        
-        StartMic();
-    }
-
-    void StartMic()
-    {
         _selectedMicrophone = _micSelector.selectedMicrophone;
-        if (string.IsNullOrEmpty(_selectedMicrophone)) return;
-
-        // Continuously record 1 second microphone audio clips
-        _micClip = Microphone.Start(_selectedMicrophone, true, 1, 44100/2);
-
-        _audioSource.clip = _micClip;
+    }
+    
+    /**
+     * Returns the starting sample position of the recording.
+     * Use this value as the argument in the StopRecording() method.
+     */
+    public float StartRecording()
+    {
+        const bool shouldLoop = false;
+        const int lengthSec = 3600; // one hour
         
-        StartCoroutine(WaitAndPlay());
+        if (_activeRecordings == 0)
+            _audioRecording = Microphone.Start(
+                _selectedMicrophone, 
+                shouldLoop, 
+                lengthSec, 
+                sampleRate);
+        
+        _activeRecordings++;
+        
+        return Microphone.GetPosition(_selectedMicrophone);
     }
 
-    System.Collections.IEnumerator WaitAndPlay()
+    /**
+     * Returns an AudioClip of the microphone's input.
+     * Provide the returned value from StartRecording()
+     * as the argument.
+     */
+    public AudioClip StopRecording(int startSample)
     {
-        while (Microphone.GetPosition(_selectedMicrophone) <= 0)
-            yield return null; 
-        _audioSource.Play();
-    }
-    
-    void Update()
-    {
-        currentLoudness = Mathf.Clamp01(GetLoudness() * sensitivity);
-        _audioSource.volume = (playMicAudio ? 1 : 0);
-    }
-    
-    void OnAudioFilterRead(float[] data, int channels)
-    {
+        // Get necessary values
+        var endSample = Microphone.GetPosition(_selectedMicrophone);
+        var sampleCount = endSample - startSample;
+        var channels = _audioRecording.channels;
+        var frequency = _audioRecording.frequency;
+        
+        if (--_activeRecordings == 0) Microphone.End(_selectedMicrophone);
+
+        if (endSample - startSample <= 0) return null;
+        
+        var clipName = startSample + "-" + endSample + "-" + sampleCount;
+        var audioClip = AudioClip.Create(clipName, sampleCount, channels, frequency, false);
+        
+        var data = new float[sampleCount * channels];
+        _audioRecording.GetData(data, startSample);
+        
         for (int i = 0; i < data.Length; i++)
         {
             data[i] *= sensitivity;
@@ -67,24 +81,10 @@ public class MicrophoneListener : MonoBehaviour
             if (data[i] > 1f) data[i] = 1f;
             if (data[i] < -1f) data[i] = -1f;
         }
+    
+        audioClip.SetData(data, 0);
+
+        return audioClip;
     }
-
-    public float GetLoudness()
-    {
-        if (_micClip == null) return 0f;
-
-        int sampleWindow = 128;
-        float[] waveData = new float[sampleWindow];
-        int micPosition = Microphone.GetPosition(_selectedMicrophone);
-
-        if (micPosition < sampleWindow) return 0f;
-
-        _micClip.GetData(waveData, micPosition - sampleWindow);
-
-        float sum = 0;
-        for (int i = 0; i < sampleWindow; i++)
-            sum += waveData[i] * waveData[i];
-
-        return Mathf.Sqrt(sum / sampleWindow);
-    }
+    
 }
